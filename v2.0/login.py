@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 import csv
 import os
+import persion_env_tracker_v2
 
 # Create a themed Tkinter window
 root = tk.Tk()
@@ -26,7 +27,7 @@ def authenticate_user(username, password):
 # Function to show the main program interface
 def show_program_interface():
     root.destroy()
-    import persion_env_tracker_v2
+    persion_env_tracker_v2.main()
 
 # Example user login function
 def user_login():
