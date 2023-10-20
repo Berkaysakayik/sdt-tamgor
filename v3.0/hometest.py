@@ -1,18 +1,13 @@
 import tkinter as tk
-from tkinter import *
 from tkinter import messagebox, ttk
 from tkinter.simpledialog import Dialog
 import csv
 from ttkthemes import ThemedTk
 import os
-import customtkinter
-
 
 def main():
-    # root = ThemedTk(theme="adapta")
-    # root.title("PersioN Envanter Takip Programı v1.0")
-    root = customtkinter.CTk()
-    customtkinter.set_appearance_mode("dark")
+    root = ThemedTk(theme="adapta")
+    root.title("PersioN Envanter Takip Programı v1.0")
 
     firma_yerleri = ["Tamgör", "SDT", "SDT-Tamgör"]
     durumlar = ["Yeni", "Kullanılmış", "Arızalı"]
@@ -21,19 +16,19 @@ def main():
         class AddItemDialog(Dialog):
             def body(self, master):
                 self.title("Ekle")
-                customtkinter.CTkLabel(master, text="Ürün Tanımı:").grid(row=0, column=0, sticky="w")
-                customtkinter.CTkLabel(master, text="Seri No:").grid(row=1, column=0, sticky="w")
-                customtkinter.CTkLabel(master, text="Parça No:").grid(row=2, column=0, sticky="w")
-                customtkinter.CTkLabel(master, text="Firma Yeri:").grid(row=3, column=0, sticky="w")
-                customtkinter.CTkLabel(master, text="Adet:").grid(row=4, column=0, sticky="w")
-                customtkinter.CTkLabel(master, text="Durum:").grid(row=5, column=0, sticky="w")
+                ttk.Label(master, text="Ürün Tanımı:").grid(row=0, column=0, sticky="w")
+                ttk.Label(master, text="Seri No:").grid(row=1, column=0, sticky="w")
+                ttk.Label(master, text="Parça No:").grid(row=2, column=0, sticky="w")
+                ttk.Label(master, text="Firma Yeri:").grid(row=3, column=0, sticky="w")
+                ttk.Label(master, text="Adet:").grid(row=4, column=0, sticky="w")
+                ttk.Label(master, text="Durum:").grid(row=5, column=0, sticky="w")
 
-                self.urun_tanimi_entry = customtkinter.CTkEntry(master)
-                self.seri_no_entry = customtkinter.CTkEntry(master)
-                self.parca_no_entry = customtkinter.CTkEntry(master)
-                self.firma_yeri_entry = customtkinter.CTkComboBox(master, values=firma_yerleri)
-                self.adet_entry = customtkinter.CTkEntry(master, validate="key", validatecommand=(master.register(self.validate_integer_input), "%P"))
-                self.durum_entry = customtkinter.CTkComboBox(master, values=durumlar)
+                self.urun_tanimi_entry = ttk.Entry(master)
+                self.seri_no_entry = ttk.Entry(master)
+                self.parca_no_entry = ttk.Entry(master)
+                self.firma_yeri_entry = ttk.Combobox(master, values=firma_yerleri)
+                self.adet_entry = ttk.Entry(master, validate="key", validatecommand=(master.register(self.validate_integer_input), "%P"))
+                self.durum_entry = ttk.Combobox(master, values=durumlar)
 
                 self.urun_tanimi_entry.grid(row=0, column=1)
                 self.seri_no_entry.grid(row=1, column=1)
@@ -89,36 +84,36 @@ def main():
         class EditDialog(Dialog):
             def body(self, master):
                 self.title("Düzenle")
-                customtkinter.CTkLabel(master, text="Ürün Tanımı:").grid(row=0, column=0, sticky="w")
-                customtkinter.CTkLabel(master, text="Seri No:").grid(row=1, column=0, sticky="w")
-                customtkinter.CTkLabel(master, text="Parça No:").grid(row=2, column=0, sticky="w")
-                customtkinter.CTkLabel(master, text="Firma Yeri:").grid(row=3, column=0, sticky="w")
-                customtkinter.CTkLabel(master, text="Adet:").grid(row=4, column=0, sticky="w")
-                customtkinter.CTkLabel(master, text="Durum:").grid(row=5, column=0, sticky="w")
+                ttk.Label(master, text="Ürün Tanımı:").grid(row=0, column=0, sticky="w")
+                ttk.Label(master, text="Seri No:").grid(row=1, column=0, sticky="w")
+                ttk.Label(master, text="Parça No:").grid(row=2, column=0, sticky="w")
+                ttk.Label(master, text="Firma Yeri:").grid(row=3, column=0, sticky="w")
+                ttk.Label(master, text="Adet:").grid(row=4, column=0, sticky="w")
+                ttk.Label(master, text="Durum:").grid(row=5, column=0, sticky="w")
 
-                self.new_urun_tanimi = customtkinter.CTkEntry(master)
+                self.new_urun_tanimi = ttk.Entry(master)
                 self.new_urun_tanimi.grid(row=0, column=1)
                 self.new_urun_tanimi.insert(0, item_data[0] if item_data[0] is not None else "")
 
-                self.new_seri_no = customtkinter.CTkEntry(master)
+                self.new_seri_no = ttk.Entry(master)
                 self.new_seri_no.grid(row=1, column=1)
                 self.new_seri_no.insert(0, item_data[1] if item_data[1] is not None else "")
 
-                self.new_parca_no = customtkinter.CTkEntry(master)
+                self.new_parca_no = ttk.Entry(master)
                 self.new_parca_no.grid(row=2, column=1)
                 self.new_parca_no.insert(0, item_data[2] if item_data[2] is not None else "")
 
                 self.new_firma_yeri_var = tk.StringVar()
-                self.new_firma_yeri_combobox = customtkinter.CTkComboBox(master, textvariable=self.new_firma_yeri_var, values=firma_yerleri)
+                self.new_firma_yeri_combobox = ttk.Combobox(master, textvariable=self.new_firma_yeri_var, values=firma_yerleri)
                 self.new_firma_yeri_combobox.grid(row=3, column=1)
                 self.new_firma_yeri_combobox.insert(0, item_data[3] if item_data[3] is not None else "")  # Eski firma yerini varsayılan olarak ayarlayın
 
-                self.new_adet = customtkinter.CTkEntry(master)
+                self.new_adet = ttk.Entry(master)
                 self.new_adet.grid(row=4, column=1)
                 self.new_adet.insert(0, item_data[4] if item_data[4] is not None else "")
                 
-                self.new_durum_var = customtkinter.StringVar()
-                self.new_durum_combobox = customtkinter.CTkComboBox(master, textvariable=self.new_durum_var, values=durumlar)
+                self.new_durum_var = tk.StringVar()
+                self.new_durum_combobox = ttk.Combobox(master, textvariable=self.new_durum_var, values=durumlar)
                 self.new_durum_combobox.grid(row=5, column=1)
                 self.new_durum_combobox.insert(0, item_data[5] if item_data[5] is not None else "")
 
@@ -210,21 +205,21 @@ def main():
                     inventory_treeview.detach(item)
 
 
-    frame = customtkinter.CTkFrame(root)
+    frame = ttk.Frame(root)
     frame.grid(row=1, column=0)
     root.grid_rowconfigure(1, weight=1)
     root.grid_columnconfigure(0, weight=1)
 
-    search_frame = customtkinter.CTkFrame(root)
+    search_frame = ttk.Frame(root)
     search_frame.grid(row=0, column=0, columnspan=4)
 
-    search_label = customtkinter.CTkLabel(search_frame, text="Ara:")
+    search_label = ttk.Label(search_frame, text="Ara:")
     search_label.grid(row=0, column=0, padx=5, pady=5)
 
-    search_entry = customtkinter.CTkEntry(search_frame)
+    search_entry = ttk.Entry(search_frame)
     search_entry.grid(row=0, column=1, padx=5, pady=5)
 
-    search_button = customtkinter.CTkButton(search_frame, text="Ara", command=search)
+    search_button = ttk.Button(search_frame, text="Ara", command=search)
     search_button.grid(row=0, column=2, padx=5, pady=5)
 
     style = ttk.Style()
@@ -245,21 +240,20 @@ def main():
     vsb.grid(row=1, column=4, sticky='ns')
     inventory_treeview.configure(yscrollcommand=vsb.set)
 
-    button_frame = customtkinter.CTkFrame(root)
+    button_frame = ttk.Frame(root)
     button_frame.grid(row=2, column=0, columnspan=4)
 
-    add_button = customtkinter.CTkButton(button_frame, text="Ekle", command=add_item)
+    add_button = ttk.Button(button_frame, text="Ekle", command=add_item)
     add_button.grid(row=0, column=0, padx=5, pady=5)
 
-    edit_button = customtkinter.CTkButton(button_frame, text="Düzenle", command=edit_item)
+    edit_button = ttk.Button(button_frame, text="Düzenle", command=edit_item)
     edit_button.grid(row=0, column=1, padx=5, pady=5)
 
-    delete_selected_button = customtkinter.CTkButton(button_frame, text="Sil (Çoklu silme)", command=delete_selected_items)
+    delete_selected_button = ttk.Button(button_frame, text="Sil (Çoklu silme)", command=delete_selected_items)
     delete_selected_button.grid(row=0, column=2, padx=5, pady=5)
 
-    refresh_button = customtkinter.CTkButton(button_frame, text="Yenile", command=reload_inventory)
+    refresh_button = ttk.Button(button_frame, text="Yenile", command=reload_inventory)
     refresh_button.grid(row=0, column=3, padx=5, pady=5)
-
 
     inventory_list = []
     reload_inventory()
