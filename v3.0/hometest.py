@@ -263,4 +263,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    print("hometest is working")
