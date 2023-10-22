@@ -6,7 +6,8 @@ from ttkthemes import ThemedTk
 import os
 
 def main():
-    root = ThemedTk(theme="adapta")
+    root = tk.Tk()
+    style = ttk.Style(root)
     root.title("PersioN Envanter Takip Programı v1.0")
 
     firma_yerleri = ["Tamgör", "SDT", "SDT-Tamgör"]
@@ -185,24 +186,30 @@ def main():
 
         with open(file_name, 'r') as file:
             reader = csv.reader(file)
+            print("with")
             for i, row in enumerate(reader):
                 inventory_treeview.insert('', 'end', values=row, iid=f'I{i}')
                 inventory_list.append(list(row))
 
     def search():
         search_query = search_entry.get().strip().lower()
+        inventory_treeview.delete(*inventory_treeview.get_children())  # Mevcut sonuçları temizle
+
         if not search_query:
             # Boş arama kutusu, tüm öğeleri göster
-            for item in inventory_treeview.get_children():
-                inventory_treeview.item(item, values=inventory_list[int(item.lstrip('I'))])
+            reload_inventory()
         else:
-            # Arama sorgusuyla eşleşen öğeleri göster
-            for item in inventory_treeview.get_children():
-                item_data = inventory_list[int(item.lstrip('I'))]
-                if any(search_query in str(data).strip().lower() for data in item_data):
-                    inventory_treeview.item(item, values=item_data)
-                else:
-                    inventory_treeview.detach(item)
+            # Arama sorgusuyla sadece belirli sütunlarda eşleşen öğeleri göster
+            for i, item_data in enumerate(inventory_list):
+                product_description = item_data[0].strip().lower()
+                serial_number = item_data[1].strip().lower()
+                part_number = item_data[2].strip().lower()
+
+                if search_query in product_description or search_query in serial_number or search_query in part_number:
+                    item_index = f'I{i}'
+                    inventory_treeview.insert('', 'end', values=item_data, iid=item_index)
+
+
 
 
     frame = ttk.Frame(root)
@@ -239,7 +246,7 @@ def main():
     vsb = ttk.Scrollbar(root, orient="vertical", command=inventory_treeview.yview)
     vsb.grid(row=1, column=4, sticky='ns')
     inventory_treeview.configure(yscrollcommand=vsb.set)
-
+    
     button_frame = ttk.Frame(root)
     button_frame.grid(row=2, column=0, columnspan=4)
 
