@@ -47,7 +47,10 @@ def homepage():
     
 
 
-img1=ImageTk.PhotoImage(Image.open("C:/Users/drops/OneDrive/Belgeler/GitHub/sdt-tamgor/v3.0/persion_600_x_440_piksel.png"))
+resim_adi = "persion_600_x_440_piksel.png"
+resim_dizini = os.path.abspath(os.path.dirname(__file__))
+resim_yolu = os.path.join(resim_dizini, resim_adi)
+img1 = ImageTk.PhotoImage(Image.open(resim_yolu))
 l1=ctk.CTkLabel(master=app,image=img1)
 l1.pack()
 
