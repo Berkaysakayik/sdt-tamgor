@@ -4,6 +4,8 @@ import customtkinter
 import tkinter as tk
 from tkinter import ttk  # Treeview widget için
 from tkinter import messagebox
+import csv
+import os
 
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("green")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -14,15 +16,12 @@ class App(customtkinter.CTk):
 
         # configure window
         self.title("PersioN Envanter Takip Programı")
-        self.geometry(f"{1100}x{580}")
+        self.geometry(f"{1400}x{680}")
 
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure((2, 3), weight=0)
         self.grid_rowconfigure((0, 1, 2), weight=1)
-        
-        firma_yerleri = ["Tamgör", "SDT", "SDT-Tamgör"]
-        durumlar = ["Yeni", "Kullanılmış", "Arızalı"]
         
         #  sidebar frame  widgets
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
@@ -76,28 +75,98 @@ class App(customtkinter.CTk):
  
 
     def add_item(self):
-        self.checkbox_slider_frame = customtkinter.CTkFrame(self)
-        self.checkbox_slider_frame.grid(row=0, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew")
-        self.checkbox_1 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
-        self.checkbox_1.grid(row=0, column=0, pady=(20, 0), padx=20, sticky="n")
-        self.entry = customtkinter.CTkEntry(master=self.checkbox_slider_frame,placeholder_text="ÜRÜN no:")
-        self.entry.grid(row=1, column=0, pady=(20, 0), padx=20, sticky="n")
-        self.checkbox_3 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
-        self.checkbox_3.grid(row=2, column=0, pady=20, padx=20, sticky="n")
-        self.appearance_mode_label = customtkinter.CTkLabel(master=self.checkbox_slider_frame, text="Appearance Mode:", anchor="w")
-        self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
-        self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(master=self.checkbox_slider_frame ,values=["SDT", "TAMGÖR", "ORTAKLIK"])
-        self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
+        self.new_frame = customtkinter.CTkFrame(self)
+        self.new_frame.grid(row=0, column=3, padx=(10, 20), pady=(10, 0), sticky="nsew")
+        self.logo_label = customtkinter.CTkLabel(self.new_frame, text="EKLE", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.logo_label.grid(row=0, column=0, padx=20, pady=(10, 10))
 
+        self.entry1lbl = customtkinter.CTkLabel(master=self.new_frame,text="Ürün Tanımı:"  )
+        self.entry1lbl.grid(row=1, column=0, pady=(10, 0), padx=5, sticky="n")
+        self.entry1 = customtkinter.CTkEntry(master=self.new_frame)
+        self.entry1.grid(row=1, column=1, pady=(10, 0), padx=10, sticky="n")
+        self.entry2lbl = customtkinter.CTkLabel(master=self.new_frame,text="Seri No:"  )
+        self.entry2lbl.grid(row=2, column=0, pady=(10, 0), padx=10, sticky="n")
+        self.entry2 = customtkinter.CTkEntry(master=self.new_frame)
+        self.entry2.grid(row=2, column=1, pady=(10, 0), padx=10, sticky="n")
+        self.entry3lbl = customtkinter.CTkLabel(master=self.new_frame,text="Parça No:")
+        self.entry3lbl.grid(row=3, column=0, pady=(10, 0), padx=10, sticky="n")
+        self.entry3 = customtkinter.CTkEntry(master=self.new_frame)
+        self.entry3.grid(row=3, column=1, pady=(10, 0), padx=10, sticky="n")
+        self.label4 = customtkinter.CTkLabel(master=self.new_frame, text="Adet:")
+        self.label4.grid(row=4, column=0, padx=5, pady=(10, 0),sticky="n")
+        self.entry4 = customtkinter.CTkEntry(master=self.new_frame, validate="key", validatecommand=(self.new_frame.register(self.validate_integer_input), "%P"))
+        self.entry4.grid(row=4, column=1, pady=(10, 0), padx=5, sticky="n")
+  
+        self.appearance_mode_label = customtkinter.CTkLabel(master=self.new_frame, text="Firma Yeri:", anchor="w")
+        self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(20, 0))
+        self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(master=self.new_frame ,values=["SDT", "TAMGÖR", "ORTAKLIK"])
+        self.appearance_mode_optionemenu.grid(row=5, column=1, padx=20, pady=(20, 10))
+        self.appearance_mode_label1 = customtkinter.CTkLabel(master=self.new_frame, text="Durum:", anchor="w")
+        self.appearance_mode_label1.grid(row=6, column=0, padx=20, pady=(20, 0))
+        self.appearance_mode_optionemenu1 = customtkinter.CTkOptionMenu(master=self.new_frame ,values=["Yeni", "Kullanılmış", "Arızalı"])
+        self.appearance_mode_optionemenu1.grid(row=6, column=1, padx=20, pady=(20, 10))
+        
+        self.add_buton=customtkinter.CTkButton(master=self.new_frame, text="OK:", anchor="w",command=self.apply ,width=50)
+        self.add_buton.grid(row=7, column=0, padx=20, pady=(20, 0))
+
+    def validate_integer_input(self, P):
+        if P == "" or P.isdigit():
+            return True
+        else:
+            return False
+
+    def apply(self):
+                new_urun_tanimi = self.entry1.get()
+                new_seri_no = self.entry2.get()
+                new_parca_no = self.entry3.get()
+                new_adet = self.entry4.get()
+                new_firma_yeri = self.appearance_mode_optionemenu.get()
+                new_durum = self.appearance_mode_optionemenu1.get()
+                print(new_adet,new_durum,new_firma_yeri,new_seri_no,new_urun_tanimi)
+
+                if new_urun_tanimi and new_seri_no and new_parca_no and new_firma_yeri and new_adet:
+                    with open('inventory.csv', 'a', newline='') as file:
+                        writer = csv.writer(file)
+                        writer.writerow([new_urun_tanimi, new_seri_no, new_parca_no,new_firma_yeri , new_adet, new_durum])
+                    self.clear_entries()
+                    messagebox.showinfo("Başarılı", "Öğe başarıyla envantere eklendi!")
+                    # reload_inventory()
+                else:
+                    messagebox.showerror("Hata", "Tüm alanların doldurulması zorunludur!")
+
+    def clear_entries(self):
+                self.entry1.delete(0, 'end')
+                self.entry2.delete(0, 'end')
+                self.entry3.delete(0, 'end')
+                self.entry4.delete(0, 'end')
+
+    def reload_inventory(self):
+        # Clear the inventory_list to avoid duplicates
+        # inventory_list.clear()
+
+        # inventory_treeview.delete(*inventory_treeview.get_children())
+
+        file_name = 'inventory.csv'
+
+        # Check if the file exists, and create it if it doesn't
+        if not os.path.exists(file_name):
+            open(file_name, 'w').close()
+
+        with open(file_name, 'r') as file:
+            reader = csv.reader(file)
+            print("with")
+            for i, row in enumerate(reader):
+                self.inventory_treeview.insert('', 'end', values=row, iid=f'I{i}')
+                self.inventory_list.append(list(row))
 
 
     def edit_item(self):
         print("edit item")
-        self.checkbox_slider_frame = customtkinter.CTkFrame(self)
-        self.checkbox_slider_frame.grid(row=0, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew")
-        self.checkbox_1 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
+        self.new_frame = customtkinter.CTkFrame(self)
+        self.new_frame.grid(row=0, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew")
+        self.checkbox_1 = customtkinter.CTkCheckBox(master=self.new_frame)
         self.checkbox_1.grid(row=0, column=0, pady=(20, 0), padx=20, sticky="n")
-        self.checkbox_2 = customtkinter.CTkCheckBox(master=self.checkbox_slider_frame)
+        self.checkbox_2 = customtkinter.CTkCheckBox(master=self.new_frame)
         self.checkbox_2.grid(row=1, column=0, pady=(20, 0), padx=20, sticky="n")
 
 
