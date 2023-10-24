@@ -51,7 +51,7 @@ class App(customtkinter.CTk):
         # create treeview
         self.style = ttk.Style()
         self.style.configure("Treeview", font=("Proxima Nova", 10), rowheight=40, relief="solid")
-        self.inventory_treeview = ttk.Treeview(self, columns=("Ürün Tanımı", "Seri No", "Parça No", "Adet",  "Şirket", "Durum"), show="headings", style="Treeview")
+        self.inventory_treeview = ttk.Treeview(self, columns=("Ürün Tanımı", "Seri No", "Parça No", "Adet",  "Şirket", "Durum"), show="headings", style="Treeview",padding=20)
         self.inventory_treeview.heading("Ürün Tanımı", text="Ürün Tanımı", anchor="w")
         self.inventory_treeview.heading("Seri No", text="Seri No", anchor="w")
         self.inventory_treeview.heading("Parça No", text="Parça No", anchor="w")
@@ -59,7 +59,16 @@ class App(customtkinter.CTk):
         self.inventory_treeview.heading("Şirket", text="Şirket", anchor="w")
         self.inventory_treeview.heading("Durum", text="Durum", anchor="w")
 
-        self.inventory_treeview.grid(row=0, column=1,  padx=(5, 0), pady=(10, 0), sticky="nsew")
+        self.inventory_treeview.column("Ürün Tanımı", width=150, anchor="w")  # İlk sütun için genişlik ve hizalama ayarlandı
+        self.inventory_treeview.column("Seri No", width=50, anchor="w")
+        self.inventory_treeview.column("Parça No", width=50, anchor="w")
+        self.inventory_treeview.column("Adet", width=20, anchor="w")
+        self.inventory_treeview.column("Şirket", width=30, anchor="w")
+        self.inventory_treeview.column("Durum", width=30, anchor="w")
+        self.inventory_treeview.grid(column=0, row=0, sticky="s")
+        self.inventory_treeview.columnconfigure(0, weight=1)
+
+        self.inventory_treeview.grid(row=0, column=1,  padx=(0, 0), pady=(0, 0), sticky="nsew")
         
         vsb = ttk.Scrollbar(self, orient="vertical", command=self.inventory_treeview.yview)
         vsb.grid(row=0, column=2, sticky='ns')
@@ -129,7 +138,7 @@ class App(customtkinter.CTk):
                 print(new_adet,new_durum,new_firma_yeri,new_seri_no,new_urun_tanimi)
 
                 if new_urun_tanimi and new_seri_no and new_parca_no and new_firma_yeri and new_adet:
-                    with open('inventory.csv', 'a', newline='') as file:
+                    with open('inventory.csv', 'a', newline='', encoding='utf-8') as file:
                         writer = csv.writer(file)
                         writer.writerow([new_urun_tanimi, new_seri_no, new_parca_no,new_adet,new_firma_yeri , new_durum])
                     self.clear_entries()
@@ -156,7 +165,7 @@ class App(customtkinter.CTk):
         if not os.path.exists(file_name):
             open(file_name, 'w').close()
 
-        with open(file_name, 'r') as file:
+        with open(file_name, 'r', encoding='utf-8') as file:
             reader = csv.reader(file)
             print("with")
             for i, row in enumerate(reader):
@@ -242,7 +251,7 @@ class App(customtkinter.CTk):
             self.item_data[4] = new_adet
             self.item_data[5] = new_durum
             self.inventory_treeview.item(self.selected_index, values=self.item_data)
-            with open('inventory.csv', 'w', newline='') as file:
+            with open('inventory.csv', 'w', newline='', encoding='utf-8') as file:
                 writer = csv.writer(file)
                 for item in self.inventory_list:
                     writer.writerow(item)
