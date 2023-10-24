@@ -162,8 +162,6 @@ class App(customtkinter.CTk):
             for i, row in enumerate(reader):
                 self.inventory_treeview.insert('', 'end', values=row, iid=f'I{i}')
                 self.inventory_list.append(list(row))
-
-
     def edit_item(self):
         # self.new_frame = customtkinter.CTkFrame(self)
         # self.new_frame.grid(row=0, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew")
@@ -267,8 +265,7 @@ class App(customtkinter.CTk):
 
     def reload_item(self):
         print("yenile item")
-
-
+        self.reload_inventory()
 
 if __name__ == "__main__":
     app = App()
