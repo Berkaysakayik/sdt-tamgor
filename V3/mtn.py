@@ -47,7 +47,7 @@ class App(customtkinter.CTk):
         self.main_button_ara.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         # create treeview
-        self.style = ttk.Style(self)
+        self.style = ttk.Style()
         self.style.configure("Treeview", font=("Proxima Nova", 10), rowheight=40, relief="solid")
         self.inventory_treeview = ttk.Treeview(self, columns=("Ürün Tanımı", "Seri No", "Parça No", "Şirket", "Adet", "Durum"), show="headings", style="Treeview")
         self.inventory_treeview.heading("Ürün Tanımı", text="Ürün Tanımı", anchor="w")
@@ -142,9 +142,9 @@ class App(customtkinter.CTk):
 
     def reload_inventory(self):
         # Clear the inventory_list to avoid duplicates
-        self.inventory_list.clear()
+        # inventory_list.clear()
 
-        self.inventory_treeview.delete(*inventory_treeview.get_children())
+        # inventory_treeview.delete(*inventory_treeview.get_children())
 
         file_name = 'inventory.csv'
 
