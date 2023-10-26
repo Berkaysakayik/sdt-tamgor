@@ -7,6 +7,7 @@ from tkinter import messagebox
 import csv
 import os
 
+
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("green")  # Themes: "blue" (standard), "green", "dark-blue"
 
@@ -37,7 +38,7 @@ class App(customtkinter.CTk):
         self.sidebar_Düzenle.grid(row=2, column=0, padx=20, pady=10)
         self.sidebar_Sil = customtkinter.CTkButton(self.sidebar_frame,text="Sil(Çoklu silme)", command=self.delete_item)
         self.sidebar_Sil.grid(row=3, column=0, padx=20, pady=10)        
-        self.sidebar_Yenile = customtkinter.CTkButton(self.sidebar_frame,text="Yenile", command=self.reload_item)
+        self.sidebar_Yenile = customtkinter.CTkButton(self.sidebar_frame,text="Yenile", command=self.reload_inventory)
         self.sidebar_Yenile.grid(row=4, column=0, padx=20, pady=10)
 
 
@@ -45,7 +46,7 @@ class App(customtkinter.CTk):
         self.entry_ara = customtkinter.CTkEntry(self, placeholder_text="Aramak istediğiniz ürünü giriniz.")
         self.entry_ara.grid(row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
-        self.main_button_ara = customtkinter.CTkButton(master=self,text="ARA", fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"),command=self.open_input_dialog_event)
+        self.main_button_ara = customtkinter.CTkButton(master=self,text="ARA", fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"),command=self.search_item)
         self.main_button_ara.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         # create treeview
@@ -74,17 +75,6 @@ class App(customtkinter.CTk):
         vsb.grid(row=0, column=2, sticky='ns')
         self.inventory_treeview.configure(yscrollcommand=vsb.set)
         self.reload_inventory()
-
-         
-        
-    def open_input_dialog_event(self):
-        dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
-        print("CTkInputDialog:", dialog.get_input())
-
-
-    def sidebar_button_event(self):
-        dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
-        print("sidebar_button click:", dialog.get_input())
  
 
     def add_item(self):
@@ -122,11 +112,13 @@ class App(customtkinter.CTk):
         self.add_buton=customtkinter.CTkButton(master=self.new_frame, text="OK",command=self.apply ,width=50)
         self.add_buton.grid(row=7, column=0, padx=20, pady=(20, 0))
 
+
     def validate_integer_input(self, P):
         if P == "" or P.isdigit():
             return True
         else:
             return False
+
 
     def apply(self):
                 new_urun_tanimi = self.entry1.get()
@@ -135,7 +127,6 @@ class App(customtkinter.CTk):
                 new_adet = self.entry4.get()
                 new_firma_yeri = self.appearance_mode_optionemenu.get()
                 new_durum = self.appearance_mode_optionemenu1.get()
-                print(new_adet,new_durum,new_firma_yeri,new_seri_no,new_urun_tanimi)
 
                 if new_urun_tanimi and new_seri_no and new_parca_no and new_firma_yeri and new_adet:
                     with open('inventory.csv', 'a', newline='', encoding='utf-8') as file:
@@ -165,19 +156,13 @@ class App(customtkinter.CTk):
         if not os.path.exists(file_name):
             open(file_name, 'w').close()
 
-        with open(file_name, 'r', encoding='utf-8') as file:
+        with open(file_name, 'r', encoding='UTF-8') as file:
             reader = csv.reader(file)
-            print("with")
             for i, row in enumerate(reader):
                 self.inventory_treeview.insert('', 'end', values=row, iid=f'I{i}')
                 self.inventory_list.append(list(row))
+
     def edit_item(self):
-        # self.new_frame = customtkinter.CTkFrame(self)
-        # self.new_frame.grid(row=0, column=3, padx=(20, 20), pady=(20, 0), sticky="nsew")
-        # self.checkbox_1 = customtkinter.CTkCheckBox(master=self.new_frame)
-        # self.checkbox_1.grid(row=0, column=0, pady=(20, 0), padx=20, sticky="n")
-        # self.checkbox_2 = customtkinter.CTkCheckBox(master=self.new_frame)
-        # self.checkbox_2.grid(row=1, column=0, pady=(20, 0), padx=20, sticky="n")
         self.selected_index = self.inventory_treeview.selection()
 
         if not self.selected_index:
@@ -260,21 +245,54 @@ class App(customtkinter.CTk):
         else:
             messagebox.showerror("Hata", "Tüm alanların doldurulması zorunludur!")
 
+    def delete_item(self):
+        selected_indices = self.inventory_treeview.selection()
+        if not selected_indices:
+            messagebox.showerror("Hata", "Lütfen silinecek öğe/öğeleri seçiniz!")
+            return
 
+        # Seçilen indeksleri öğe numaralarına dönüştürme
+        oge_nolar = [int(selected_index.lstrip('I')) for selected_index in selected_indices]
+
+        # Dizin çakışmalarını önlemek için seçili öğeleri ters sırayla silme
+        for oge_no in sorted(oge_nolar, reverse=True):
+            self.selected_index = f'I{oge_no}'
+            self.inventory_treeview.delete(self.selected_index)
+            self.inventory_list.pop(oge_no)
+
+        with open('inventory.csv', 'w', newline='', encoding="UTF-8") as file:
+            writer = csv.writer(file)
+            for item in self.inventory_list:
+                writer.writerow(item)
+
+        messagebox.showinfo("Başarılı", "Öğe/Öğeler başarıyla silindi.")
+
+    def search_item(self):
+        search_query = self.entry_ara.get().strip().lower()
+        self.inventory_treeview.delete(*self.inventory_treeview.get_children())  # Mevcut sonuçları temizle
+
+        if not search_query:
+            # Boş arama kutusu, tüm öğeleri göster
+            self.reload_inventory()
+        else:
+            # Arama sorgusuyla sadece belirli sütunlarda eşleşen öğeleri göster
+            for i, item_data in enumerate(self.inventory_list):
+                product_description = item_data[0].strip().lower()
+                serial_number = item_data[1].strip().lower()
+                part_number = item_data[2].strip().lower()
+
+                if search_query in product_description or search_query in serial_number or search_query in part_number:
+                    item_index = f'I{i}'
+                    self.inventory_treeview.insert('', 'end', values=item_data, iid=item_index)
+
+    def exit_application(self):
+        self.destroy()  # Arayüzü kapat
 
     def validate_integer_input(self, P):
         if P == "" or P.isdigit():
             return True
         else:
             return False
-
-    def delete_item(self):
-        print("sil item")
-
-
-    def reload_item(self):
-        print("yenile item")
-        self.reload_inventory()
 
 if __name__ == "__main__":
     app = App()

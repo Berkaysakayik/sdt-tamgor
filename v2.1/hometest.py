@@ -53,7 +53,7 @@ def main():
                 new_durum = self.durum_entry.get()
 
                 if new_urun_tanimi and new_seri_no and new_parca_no and new_firma_yeri and new_adet:
-                    with open('inventory.csv', 'a', newline='') as file:
+                    with open('inventory.csv', 'a', newline='', encoding="UTF-8") as file:
                         writer = csv.writer(file)
                         writer.writerow([new_urun_tanimi, new_seri_no, new_parca_no,new_firma_yeri , new_adet, new_durum])
                     self.clear_entries()
@@ -135,7 +135,7 @@ def main():
                     item_data[4] = new_adet
                     item_data[5] = new_durum
                     inventory_treeview.item(selected_index, values=item_data)
-                    with open('inventory.csv', 'w', newline='') as file:
+                    with open('inventory.csv', 'w', newline='', encoding="UTF-8") as file:
                         writer = csv.writer(file)
                         for item in inventory_list:
                             writer.writerow(item)
@@ -165,7 +165,7 @@ def main():
             inventory_treeview.delete(selected_index)
             inventory_list.pop(oge_no)
 
-        with open('inventory.csv', 'w', newline='') as file:
+        with open('inventory.csv', 'w', newline='', encoding="UTF-8") as file:
             writer = csv.writer(file)
             for item in inventory_list:
                 writer.writerow(item)
@@ -184,7 +184,7 @@ def main():
         if not os.path.exists(file_name):
             open(file_name, 'w').close()
 
-        with open(file_name, 'r') as file:
+        with open(file_name, 'r',encoding="UTF-8") as file:
             reader = csv.reader(file)
             print("with")
             for i, row in enumerate(reader):
