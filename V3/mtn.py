@@ -49,6 +49,25 @@ class App(customtkinter.CTk):
         self.main_button_ara = customtkinter.CTkButton(master=self,text="ARA", fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"),command=self.search_item)
         self.main_button_ara.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
+        self.check1_var = tk.IntVar()
+        self.check2_var = tk.IntVar()
+        self.check3_var = tk.IntVar()
+
+        self.result_frame = customtkinter.CTkFrame(self, corner_radius=0)
+        self.result_frame.grid(row=1, column=1, columnspan=2, padx=(20, 0), pady=(10, 10), sticky="nsew")
+
+        self.check1 = customtkinter.CTkCheckBox(self.result_frame, text="SDT", variable=self.check1_var)
+        self.check2 = customtkinter.CTkCheckBox(self.result_frame, text="TAMGÖR", variable=self.check2_var)
+        self.check3 = customtkinter.CTkCheckBox(self.result_frame, text="ORTAKLIK", variable=self.check3_var)
+
+        self.check1.grid(row=0, column=0, padx=(20, 0), pady=(20, 0))
+        self.check2.grid(row=0, column=1, padx=(20, 0), pady=(20, 0))
+        self.check3.grid(row=0, column=2, padx=(20, 0), pady=(20, 0))
+
+        
+
+
+
         # create treeview
         self.style = ttk.Style()
         self.style.configure("Treeview", font=("Proxima Nova", 10), rowheight=40, relief="solid")
@@ -109,7 +128,7 @@ class App(customtkinter.CTk):
         self.appearance_mode_optionemenu1 = customtkinter.CTkOptionMenu(master=self.new_frame ,values=["Yeni", "Kullanılmış", "Arızalı"])
         self.appearance_mode_optionemenu1.grid(row=6, column=1, padx=20, pady=(20, 10))
         
-        self.add_buton=customtkinter.CTkButton(master=self.new_frame, text="OK",command=self.apply ,width=50)
+        self.add_buton=customtkinter.CTkButton(master=self.new_frame, text="Tamam",command=self.apply ,width=50)
         self.add_buton.grid(row=7, column=0, padx=20, pady=(20, 0))
 
 
@@ -217,7 +236,7 @@ class App(customtkinter.CTk):
         self.appearance_mode_optionemenu1.grid(row=6, column=1, padx=20, pady=(20, 10))
         self.appearance_mode_optionemenu1.set(self.item_data[5] if self.item_data[5] is not None else "")
         
-        self.add_buton=customtkinter.CTkButton(master=self.new_frame, text="OK",command=self.editapply ,width=50)
+        self.add_buton=customtkinter.CTkButton(master=self.new_frame, text="Tamam",command=self.editapply ,width=50)
         self.add_buton.grid(row=7, column=0, padx=20, pady=(20, 0))
 
     def editapply(self):
@@ -267,23 +286,68 @@ class App(customtkinter.CTk):
 
         messagebox.showinfo("Başarılı", "Öğe/Öğeler başarıyla silindi.")
 
+    # def search_item(self):
+    #     search_query = self.entry_ara.get().strip().lower()
+    #     self.inventory_treeview.delete(*self.inventory_treeview.get_children())  # Mevcut sonuçları temizle
+
+    #     if not search_query:
+    #         # Boş arama kutusu, tüm öğeleri göster
+    #         self.reload_inventory()
+    #     else:
+    #         # Arama sorgusuyla sadece belirli sütunlarda eşleşen öğeleri göster
+    #         for i, item_data in enumerate(self.inventory_list):
+    #             product_description = item_data[0].strip().lower()
+    #             serial_number = item_data[1].strip().lower()
+    #             part_number = item_data[2].strip().lower()
+
+    #             if search_query in product_description or search_query in serial_number or search_query in part_number:
+    #                 item_index = f'I{i}'
+    #                 self.inventory_treeview.insert('', 'end', values=item_data, iid=item_index)
+
     def search_item(self):
         search_query = self.entry_ara.get().strip().lower()
+        company_filter = (
+            self.check1_var.get(),
+            self.check2_var.get(),
+            self.check3_var.get()
+        )
+
         self.inventory_treeview.delete(*self.inventory_treeview.get_children())  # Mevcut sonuçları temizle
 
         if not search_query:
-            # Boş arama kutusu, tüm öğeleri göster
+            # Boş arama kutusu, sonuçları temizle
             self.reload_inventory()
-        else:
-            # Arama sorgusuyla sadece belirli sütunlarda eşleşen öğeleri göster
-            for i, item_data in enumerate(self.inventory_list):
-                product_description = item_data[0].strip().lower()
-                serial_number = item_data[1].strip().lower()
-                part_number = item_data[2].strip().lower()
 
-                if search_query in product_description or search_query in serial_number or search_query in part_number:
-                    item_index = f'I{i}'
-                    self.inventory_treeview.insert('', 'end', values=item_data, iid=item_index)
+        # Arama sorgusuyla sadece belirli sütunlarda ve seçilen şirketlere göre eşleşen öğeleri göster
+        for i, item_data in enumerate(self.inventory_list):
+            product_description = item_data[0].strip().lower()
+            serial_number = item_data[1].strip().lower()
+            part_number = item_data[2].strip().lower()
+            company = item_data[4].strip().lower()
+
+            # Kullanıcı tarafından seçilen filtrelere göre öğeleri kontrol et
+            if (
+                (
+                    (self.check1_var.get() == 1 and "SDT" in company) or
+                    (self.check2_var.get() == 1 and "TAMGÖR" in company) or
+                    (self.check3_var.get() == 1 and "ORTAKLIK" in company)
+                )
+                and
+                (search_query in product_description or
+                search_query in serial_number or
+                search_query in part_number)
+            ):
+                item_index = f'I{i}'
+                self.inventory_treeview.insert('', 'end', values=item_data, iid=item_index)
+
+
+
+
+
+
+
+
+
 
     def exit_application(self):
         self.destroy()  # Arayüzü kapat
