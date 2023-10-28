@@ -49,9 +49,94 @@ class App(customtkinter.CTk):
         self.main_button_ara = customtkinter.CTkButton(master=self,text="ARA", fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"),command=self.search_item)
         self.main_button_ara.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
-        self.check1_var = tk.IntVar()
-        self.check2_var = tk.IntVar()
-        self.check3_var = tk.IntVar()
+        self.check1_var = tk.StringVar(value="off") 
+        self.check2_var = tk.StringVar(value="off") 
+        self.check3_var = tk.StringVar(value="off") 
+        
+        # def checkbox_event():
+        #     checksdt = self.check1_var.get()
+        #     checktamgor = self.check2_var.get()
+        #     checkortaklik = self.check3_var.get()
+        #     which_company=0
+
+
+
+        #     if(checkortaklik == "on" and checktamgor == "on" and checksdt == "on"):
+        #         print("hepsi")
+        #         self.inventory_treeview.delete(*self.inventory_treeview.get_children())  
+        #         for i, item_data in enumerate(self.inventory_list):
+        #             company = item_data[4].strip().lower()
+        #             if( "ortaklik" in company or "tamgör" in company or "sdt" in company):
+        #                 item_index = f'I{i}'
+        #                 self.inventory_treeview.insert('', 'end', values=item_data, iid=item_index)
+             
+        #     if(checkortaklik == "off" and checktamgor == "off" and checksdt == "on"):
+        #         print("search for sdt")
+        #         self.inventory_treeview.delete(*self.inventory_treeview.get_children())  
+        #         for i, item_data in enumerate(self.inventory_list):
+        #             company = item_data[4].strip().lower()
+        #             if("sdt" in company):
+        #                 item_index = f'I{i}'
+        #                 self.inventory_treeview.insert('', 'end', values=item_data, iid=item_index)
+
+            
+        #     if(checkortaklik == "off" and checktamgor == "on" and checksdt == "off"):
+        #         print("search for tamgor")
+        #         self.inventory_treeview.delete(*self.inventory_treeview.get_children())  
+        #         for i, item_data in enumerate(self.inventory_list):
+        #             company = item_data[4].strip().lower()
+        #             if("tamgör" in company):
+        #                 item_index = f'I{i}'
+        #                 self.inventory_treeview.insert('', 'end', values=item_data, iid=item_index)
+
+                
+        #     if(checkortaklik == "on" and checktamgor == "off" and checksdt == "off"):
+        #         print("search for ortaklık")
+        #         self.inventory_treeview.delete(*self.inventory_treeview.get_children())  
+        #         for i, item_data in enumerate(self.inventory_list):
+        #             company = item_data[4].strip().lower()
+        #             if("ortaklik" in company):
+        #                 item_index = f'I{i}'
+        #                 self.inventory_treeview.insert('', 'end', values=item_data, iid=item_index)
+
+
+        #     if(checkortaklik == "off" and checktamgor == "on" and checksdt == "on"):
+        #         print("search for sdt-tamgor")
+        #         self.inventory_treeview.delete(*self.inventory_treeview.get_children())  
+        #         for i, item_data in enumerate(self.inventory_list):
+        #             company = item_data[4].strip().lower()
+        #             if(  "tamgör" in company or"sdt" in company):
+        #                 item_index = f'I{i}'
+        #                 self.inventory_treeview.insert('', 'end', values=item_data, iid=item_index)
+               
+
+        #     if(checkortaklik == "on" and checktamgor == "off" and checksdt == "on"):
+        #         print("search for ortaklık-sdt")
+        #         self.inventory_treeview.delete(*self.inventory_treeview.get_children())  
+        #         for i, item_data in enumerate(self.inventory_list):
+        #             company = item_data[4].strip().lower()
+        #             if( "ortaklik" in company or "sdt" in company):
+        #                 item_index = f'I{i}'
+        #                 self.inventory_treeview.insert('', 'end', values=item_data, iid=item_index)
+                
+        #     if(checkortaklik == "on" and checktamgor == "on" and checksdt == "off"):
+        #         print("search for ortaklık-tamgor")
+        #         self.inventory_treeview.delete(*self.inventory_treeview.get_children())  
+
+        #         for i, item_data in enumerate(self.inventory_list):
+        #             company = item_data[4].strip().lower()
+        #             if( "ortaklik" in company or "tamgör" in company):
+        #                 item_index = f'I{i}'
+        #                 self.inventory_treeview.insert('', 'end', values=item_data, iid=item_index)
+               
+                
+        #     if(checkortaklik == "off" and checktamgor == "off" and checksdt == "off"):
+        #         print("noone")
+        #         self.reload_inventory()
+
+           
+           
+      
 
         self.result_frame = customtkinter.CTkFrame(self, corner_radius=0)
         self.result_frame.grid(row=1, column=1, columnspan=2, padx=(20, 0), pady=(10, 10), sticky="nsew")
@@ -306,37 +391,33 @@ class App(customtkinter.CTk):
 
     def search_item(self):
         search_query = self.entry_ara.get().strip().lower()
-        company_filter = (
-            self.check1_var.get(),
-            self.check2_var.get(),
-            self.check3_var.get()
-        )
 
         self.inventory_treeview.delete(*self.inventory_treeview.get_children())  # Mevcut sonuçları temizle
 
         if not search_query:
             # Boş arama kutusu, sonuçları temizle
             self.reload_inventory()
-
+        
         # Arama sorgusuyla sadece belirli sütunlarda ve seçilen şirketlere göre eşleşen öğeleri göster
         for i, item_data in enumerate(self.inventory_list):
+
             product_description = item_data[0].strip().lower()
             serial_number = item_data[1].strip().lower()
             part_number = item_data[2].strip().lower()
             company = item_data[4].strip().lower()
 
-            # Kullanıcı tarafından seçilen filtrelere göre öğeleri kontrol et
             if (
                 (
-                    (self.check1_var.get() == 1 and "SDT" in company) or
-                    (self.check2_var.get() == 1 and "TAMGÖR" in company) or
-                    (self.check3_var.get() == 1 and "ORTAKLIK" in company)
+                    (self.check1_var.get() == "on" and "sdt" in company) or
+                    (self.check2_var.get() == "on" and "tamgör" in company) or
+                    (self.check3_var.get() == "on" and "ortaklik" in company)
                 )
-                and
+                or
                 (search_query in product_description or
                 search_query in serial_number or
                 search_query in part_number)
             ):
+
                 item_index = f'I{i}'
                 self.inventory_treeview.insert('', 'end', values=item_data, iid=item_index)
 
