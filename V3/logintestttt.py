@@ -45,9 +45,6 @@ def user_login():
 
 
 
-
-
-
 resim_adi = "persion_600_x_440_piksel.png"
 resim_dizini = os.path.abspath(os.path.dirname(__file__))
 resim_yolu = os.path.join(resim_dizini, resim_adi)
